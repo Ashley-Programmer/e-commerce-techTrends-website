@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>TechTrend Innovations - About Us</title>
+        <meta name="description" content="Learn about TechTrend Innovations, our mission, and our commitment to delivering cutting-edge electronics and appliances.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+        <style>
+            .search-bar {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                transform: translateY(-100%);
+                opacity: 0;
+                transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+                pointer-events: none;
+                z-index: 40;
+            }
+            .search-bar.active {
+                transform: translateY(0);
+                opacity: 1;
+                pointer-events: auto;
+            }
+            .search-toggle i.fas.fa-search {
+                display: inline-block !important;
+                font-size: 1.125rem;
+                color: #1f2937;
+            }
+        </style>
+    </head>
+    <body class="font-inter bg-gray-100">
+        <!-- Navigation -->
+        <nav class="navbar bg-white shadow-sm fixed top-0 left-0 w-full z-50 transition-all duration-300" role="navigation" aria-label="main navigation">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <div class="flex-shrink-0">
+                        <a href="../pages/index.html" class="text-xl font-bold text-gray-900">
+                            <img src="/assets/logo_images/techTrends1.jpeg" alt="techTrends Innovations Logo" class="h-8 w-auto">
+                        </a>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button class="search-toggle flex items-center focus:outline-none" id="search-toggle" aria-expanded="false" aria-controls="search-bar" aria-label="Toggle search">
+                            <i class="fas fa-search text-gray-800"></i>
+                        </button>
+                    </div>
+                    <div class="hidden md:block">
+                        <div class="ml-10 flex space-x-4 lg:space-x-6" id="nav-menu" role="list">
+                            <a href="../pages/index.html" class="nav-link text-gray-900 hover:text-blue-600 font-semibold text-sm lg:text-base">Home</a>
+                            <a href="../pages/about.html" class="nav-link text-gray-900 hover:text-blue-600 font-semibold text-sm lg:text-base active" aria-current="page">About Us</a>
+                            <div class="relative group">
+                                <a href="../pages/products.html" class="nav-link text-gray-900 hover:text-blue-600 font-semibold text-sm lg:text-base">Products
+                                    <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                                </a>
+                                <div class="dropdown absolute hidden group-hover:block bg-white shadow-lg rounded-lg mt-2 w-64 z-50">
+                                    <a href="../pages/products.html?category=tv" class="flex items-center px-4 py-2 hover:bg-gray-100 transition duration-200">
+                                        <img src="../assets/images/category_tv_thumb.jpg" alt="Televisions" class="w-8 h-8 object-cover rounded mr-2">
+                                        <span class="text-gray-700 text-sm">Televisions</span>
+                                    </a>
+                                    <a href="../pages/products.html?category=appliances" class="flex items-center px-4 py-2 hover:bg-gray-100 transition duration-200">
+                                        <img src="../assets/images/category_appliances_thumb.jpg" alt="Home Appliances" class="w-8 h-8 object-cover rounded mr-2">
+                                        <span class="text-gray-700 text-sm">Home Appliances</span>
+                                    </a>
+                                    <a href="../pages/products.html?category=kitchen" class="flex items-center px-4 py-2 hover:bg-gray-100 transition duration-200">
+                                        <img src="../assets/images/category_kitchen_thumb.jpg" alt="Kitchen Appliances" class="w-8 h-8 object-cover rounded mr-2">
+                                        <span class="text-gray-700 text-sm">Kitchen Appliances</span>
+                                    </a>
+                                    <a href="../pages/products.html?category=climate" class="flex items-center px-4 py-2 hover:bg-gray-100 transition duration-200">
+                                        <img src="../assets/images/category_climate_thumb.jpg" alt="Climate Control" class="w-8 h-8 object-cover rounded mr-2">
+                                        <span class="text-gray-700 text-sm">Climate Control</span>
+                                    </a>
+                                </div>
+                            </div>
+                            <a href="../pages/contact.html" class="nav-link text-gray-900 hover:text-blue-600 font-semibold text-sm lg:text-base">Contact</a>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <!-- Nav toggle -->
+                        <button class="nav-toggle md:hidden flex flex-col space-y-1.5 focus:outline-none" id="nav-toggle" aria-expanded="false" aria-controls="mobile-menu" aria-label="Toggle navigation">
+                            <span class="w-6 h-0.5 bg-gray-800 transition-transform duration-300"></span>
+                            <span class="w-6 h-0.5 bg-gray-800 transition-transform duration-300"></span>
+                            <span class="w-6 h-0.5 bg-gray-800 transition-transform duration-300"></span>
+                        </button>
+                        <!-- Shopping cart -->
+                        <a href="../pages/cart.html" class="text-gray-900 hover:text-blue-600">
+                            <i class="fas fa-shopping-cart"></i>
+                        </a>
+                        <!-- User account -->
+                        <a href="../pages/login.html" class="ml-4 text-gray-900 hover:text-blue-600">
+                            <i class="fas fa-user"></i>
+                        </a>
+                    </div>
+                </div>
+                <!-- Mobile Menu -->
+                <div class="hidden md:hidden" id="mobile-menu">
+                    <ul class="flex flex-col space-y-2 mt-2 py-4" role="list">
+                        <li>
+                            <a href="../index.html" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">Home</a>
+                        </li>
+                        <li>
+                            <a href="../pages/about.html" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md active" aria-current="page">About Us</a>
+                        </li>
+                        <li>
+                            <button class="nav-link text-gray-700 hover:text-blue-600 font-semibold text-base flex items-center w-full justify-center" id="mobile-products-toggle" aria-expanded="false" aria-controls="mobile-products-menu">
+                                Products <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                            </button>
+                            <ul class="hidden mt-2 space-y-1" id="mobile-products-menu">
+                                <li>
+                                    <a href="../pages/products.html?category=tv" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">Televisions</a>
+                                </li>
+                                <li>
+                                    <a href="../pages/products.html?category=appliances" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">Home Appliances</a>
+                                </li>
+                                <li>
+                                    <a href="../pages/products.html?category=kitchen" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">Kitchen Appliances</a>
+                                </li>
+                                <li>
+                                    <a href="../pages/products.html?category=climate" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">Climate Control</a>
+                                </li>
+                                <li>
+                                    <a href="../pages/products.html" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">All Products</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="../pages/contact.html" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">Contact</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Search Bar -->
+            <div class="search-bar bg-white w-full shadow-md py-2 px-4 sm:px-6" id="search-bar">
+                <div class="max-w-7xl mx-auto flex items-center">
+                    <input type="text" id="search-input" placeholder="Search products..." class="w-full px-3 py-2 text-sm sm:text-base text-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600" aria-label="Search products">
+                    <button id="search-submit" class="ml-2 text-blue-600 hover:text-blue-700" aria-label="Submit search">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- Mini cart dropdown -->
+            <div class="mini-cart-dropdown hidden absolute right-0 mt-2 w-64 bg-white shadow-lg rounded-lg z-50">
+                <div class="p-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Your Cart</h3>
+                    <div id="mini-cart-items" class="space-y-4"></div>
+                    <p id="mini-cart-total" class="text-gray-500 font-semibold mt-4">Total: R0.00</p>
+                    <div class="flex justify-between mt-4">
+                        <a href="../pages/cart.html" class="bg-gray-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-600">View Cart</a>
+                        <button id="proceed-to-checkout" class="bg-gray-200 text-gray-800 py-2 px-4 rounded hover:bg-gray-300 transition duration-200">Checkout</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- About Us Section -->
+        <section class="about py-24 sm:py-28 bg-gray-100" role="region" aria-label="About Us">
+            <div class="container mx-auto px-4 sm:px-6">
+                <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 sm:mb-8 text-center">About TechTrend Innovations</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">Our Mission</h3>
+                        <p class="text-gray-600 text-sm sm:text-base mb-4">
+                            At TechTrend Innovations, our mission is to enhance everyday living by delivering cutting-edge electronics and appliances that combine innovation, quality, and affordability. Based in Rustenburg, South Africa, we strive to bring the latest technology to homes across the region, empowering our customers with products that make life more convenient and enjoyable.
+                        </p>
+                        <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">Our Values</h3>
+                        <ul class="space-y-2 text-gray-600 text-sm sm:text-base">
+                            <li><i class="fas fa-check text-blue-600 mr-2"></i><strong>Innovation:</strong> We embrace the latest advancements to offer state-of-the-art products.</li>
+                            <li><i class="fas fa-check text-blue-600 mr-2"></i><strong>Quality:</strong> Every product is rigorously tested to meet the highest standards.</li>
+                            <li><i class="fas fa-check text-blue-600 mr-2"></i><strong>Customer Focus:</strong> Your satisfaction is at the heart of everything we do.</li>
+                            <li><i class="fas fa-check text-blue-600 mr-2"></i><strong>Sustainability:</strong> We prioritize eco-friendly solutions to reduce our environmental impact.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <img src="/assets/images/team_image1.png" alt="TechTrend Innovations Team" class="w-full h-64 sm:h-80 md:h-96 object-cover rounded-lg shadow-lg">
+                        <p class="text-gray-600 text-sm sm:text-base mt-4">
+                            Our team of dedicated professionals works tirelessly to source and develop products that meet the evolving needs of our customers. From smart TVs to energy-efficient appliances, we are committed to excellence in every aspect of our business.
+                        </p>
+                    </div>
+                </div>
+                <div class="mt-8 text-center">
+                    <a href="../pages/contact.html" class="btn inline-block bg-blue-600 text-white font-semibold py-4 px-10 rounded-lg hover:bg-blue-700 transition duration-300 text-sm sm:text-base">Get in Touch</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="bg-gray-900 text-white py-10 sm:py-12" role="contentinfo" aria-label="Footer">
+            <div class="container mx-auto px-4 sm:px-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
+                    <div>
+                        <h3 class="text-lg sm:text-xl font-semibold mb-4">TechTrend Innovations</h3>
+                        <p class="text-sm sm:text-base text-gray-400 mb-4">Delivering cutting-edge electronics and appliances to enhance your lifestyle.</p>
+                        <p class="text-sm sm:text-base text-gray-400">&copy; 2025 TechTrend Innovations. All rights reserved.</p>
+                    </div>
+                    <div>
+                        <h3 class="text-lg sm:text-xl font-semibold mb-4">Quick Links</h3>
+                        <ul class="space-y-2 text-sm sm:text-base">
+                            <li><a href="../pages/about.html" class="text-gray-400 hover:text-blue-400 transition duration-300">About Us</a></li>
+                            <li><a href="../pages/contact.html" class="text-gray-400 hover:text-blue-400 transition duration-300">Contact Us</a></li>
+                            <li><a href="../pages/products.html" class="text-gray-400 hover:text-blue-400 transition duration-300">Products</a></li>
+                            <li><a href="../pages/register.html" class="text-gray-400 hover:text-blue-400 transition duration-300">Register</a></li>
+                            <li><a href="../pages/login.html" class="text-gray-400 hover:text-blue-400 transition duration-300">Login</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-lg sm:text-xl font-semibold mb-4">Contact Us</h3>
+                        <ul class="space-y-2 text-sm sm:text-base">
+                            <li><a href="mailto:support@techtrendinnovations.co.za" class="text-gray-400 hover:text-blue-400 transition duration-300">support@techtrendinnovations.co.za</a></li>
+                            <li><a href="tel:+27760932272" class="text-gray-400 hover:text-blue-400 transition duration-300">Phone: (+27)-76-093-2272</a></li>
+                            <li><span class="text-gray-400">0313 Makweleng Sec, Rustenburg City, SA</span></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-lg sm:text-xl font-semibold mb-4">Stay Connected</h3>
+                        <p class="text-sm sm:text-base text-gray-400 mb-4">Join our newsletter for exclusive offers and updates.</p>
+                        <div class="flex">
+                            <input type="email" placeholder="Enter your email" class="w-full px-3 py-2 text-sm sm:text-base text-gray-800 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-600">
+                            <button class="bg-blue-600 text-white px-3 sm:px-4 py-2 rounded-r-md hover:bg-blue-700 transition duration-300 text-sm sm:text-base">Subscribe</button>
+                        </div>
+                        <div class="flex space-x-4 mt-4">
+                            <a href="https://facebook.com/techtrendinnovations" class="text-gray-400 hover:text-blue-400 transition duration-300 text-lg" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                            <a href="https://twitter.com/techtrendinnovations" class="text-gray-400 hover:text-blue-400 transition duration-300 text-lg" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                            <a href="https://instagram.com/techtrendinnovations" class="text-gray-400 hover:text-blue-400 transition duration-300 text-lg" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                            <a href="https://linkedin.com/company/techtrendinnovations" class="text-gray-400 hover:text-blue-400 transition duration-300 text-lg" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="border-t border-gray-800 mt-8 pt-6 text-center">
+                    <p class="text-sm text-gray-400">Designed with innovation in mind by CodeX.</p>
+                </div>
+            </div>
+        </footer>
+        
+        <script src="../js/about.js" defer></script>
+    </body>
+</html>

@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<!-- saved from url=(0012)about:srcdoc -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.13/html-to-image.min.js" integrity="sha512-iZ2ORl595Wx6miw+GuadDet4WQbdSWS3JLMoNfY8cRGoEFy6oT3G9IbcrBeL6AfkgpA51ETt/faX6yLV+/gFJg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+      (function() {
+        const originalConsole = window.console;
+        window.console = {
+          log: (...args) => {
+            originalConsole.log(...args);
+            window.parent.postMessage({ type: 'console', message: args.join(' ') }, '*');
+          },
+          error: (...args) => {
+            originalConsole.error(...args);
+            window.parent.postMessage({ type: 'console', message: 'Error: ' + args.join(' ') }, '*');
+          },
+          warn: (...args) => {
+            originalConsole.warn(...args);
+            window.parent.postMessage({ type: 'console', message: 'Warning: ' + args.join(' ') }, '*');
+          }
+        };
+
+        let requestId = 0;
+        let callbacksMap = new Map();
+        window.claude = {
+          complete: (prompt) => {
+            return new Promise((resolve, reject) => {
+              const id = requestId++;
+              callbacksMap.set(id, { resolve, reject });
+              window.parent.postMessage({ type: 'claudeComplete', id, prompt }, '*');
+            });
+          }
+        };
+
+        let pendingBlobs = new Map();
+        URL.createObjectURL = (blob) => {
+          // Store the blob and create an ID and URL for it
+          const blobId = `blob-${Date.now()}-${Math.random()}`;
+          pendingBlobs.set(blobId, blob);
+          return `blob-request://${blobId}`;
+        };
+
+        URL.revokeObjectURL = (url) => {
+          // Remove the blob from our store
+          const blobId = url.replace("blob-request://", "");
+          pendingBlobs.delete(blobId);
+        };
+
+        const getBlobFromURL = (url) => {
+          const blobId = url.replace("blob-request://", "");
+          return pendingBlobs.get(blobId);
+        };
+
+        // Override global fetch
+        window.fetch = (url, init = {}) => {
+          return new Promise((resolve, reject) => {
+            const id = requestId++;
+            callbacksMap.set(id, { resolve, reject });
+            window.parent.postMessage({
+              type: 'proxyFetch',
+              id,
+              url,
+              init,
+            }, '*');
+          });
+        };
+
+        window.addEventListener('message', async (event) => {
+          if (event.data.type === 'takeScreenshot') {
+            const rootElement = document.getElementById('artifacts-component-root-html');
+            if (!rootElement) {
+              window.parent.postMessage({
+                type: 'screenshotError',
+                error: new Error('Root element not found'),
+              }, '*');
+            }
+            const screenshot = await htmlToImage.toPng(rootElement, {
+              imagePlaceholder:
+                "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAA1JREFUGFdjePDgwX8ACOQDoNsk0PMAAAAASUVORK5CYII=",
+            });
+            window.parent.postMessage({
+              type: 'screenshotData',
+              data: screenshot,
+            }, '*');
+          } else if (event.data.type === 'claudeComplete') {
+            const callback = callbacksMap.get(event.data.id);
+            if (event.data.error) {
+              callback.reject(new Error(event.data.error));
+            } else {
+              callback.resolve(event.data.completion);
+            }
+            callbacksMap.delete(event.data.id);
+          } else if (event.data.type === 'proxyFetchResponse') {
+            const callback = callbacksMap.get(event.data.id);
+            if (event.data.error) {
+              callback.reject(new Error(event.data.error));
+            } else {
+              callback.resolve(new Response(event.data.body, {
+                status: event.data.status,
+                statusText: event.data.statusText,
+                headers: event.data.headers
+              }));
+            }
+            callbacksMap.delete(event.data.id);
+          }
+        });
+
+        window.addEventListener('click', (event) => {
+          const isEl = event.target instanceof HTMLElement;
+          if (!isEl) return;
+    
+          // find ancestor links
+          const linkEl = event.target.closest("a");
+          if (!linkEl || !linkEl.href) return;
+    
+          event.preventDefault();
+          event.stopImmediatePropagation();
+    
+          if (linkEl.href.startsWith("blob-request:")) {
+            const blob = getBlobFromURL(linkEl.href);
+            if (!blob) return;
+            void blob.arrayBuffer().then((data) => {
+              window.parent.postMessage({
+                type: "downloadFile",
+                filename: linkEl.download,
+                data,
+                mimeType: blob.type || "application/octet-stream",
+              });
+            });
+          } else if (linkEl.href.startsWith("data:")) {
+            const [header, base64Data] = linkEl.href.split(",");
+            const mimeMatch = header.match(/data:([^;]+)/);
+            const mimeType = mimeMatch ? mimeMatch[1] : "application/octet-stream";
+            const binaryString = atob(base64Data);
+            const data = Uint8Array.from(binaryString, (c) =>
+              c.charCodeAt(0),
+            ).buffer;
+            window.parent.postMessage({
+              type: "downloadFile",
+              filename: linkEl.download,
+              data,
+              mimeType,
+            });
+          } else {
+            let linkUrl;
+            try {
+              linkUrl = new URL(linkEl.href);
+            } catch (error) {
+              return;
+            }
+    
+            if (linkUrl.hostname === window.location.hostname) return;
+      
+            window.parent.postMessage({
+              type: 'openExternal',
+              href: linkEl.href,
+            }, '*');
+          }
+      });
+
+        const originalOpen = window.open;
+        window.open = function (url) {
+          window.parent.postMessage({
+            type: "openExternal",
+            href: url,
+          }, "*");
+        };
+
+        window.addEventListener('error', (event) => {
+          window.parent.postMessage({ type: 'console', message: 'Uncaught Error: ' + event.message }, '*');
+        });
+      })();
+    </script>
+  
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Login Form</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.tailwindcss.com/"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+      }
+    </script>
+    <style>
+      /* Theme styles will be applied dynamically via JavaScript */
+      .theme-transition {
+          transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+      }
+    </style>
+  <style>
+          input::placeholder {
+            color: #6b7280 !important;
+          }
+        </style><style>
+          input::placeholder {
+            color: #9ca3af !important;
+          }
+        </style><style>
+          input::placeholder {
+            color: #6b7280 !important;
+          }
+        </style></head>
+  <body class="theme-transition flex justify-center items-center h-screen relative" id="artifacts-component-root-html" style="background-color: rgb(243, 244, 246); color: rgb(31, 41, 55);">
+    
+    <!-- Theme toggle button positioned absolutely -->
+    <div class="absolute top-4 right-4 z-10">
+        <button id="theme-toggle" class="theme-transition p-2 rounded-full" style="background-color: rgb(229, 231, 235);">
+            <svg id="themeIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"></path></svg>                  
+        </button>
+    </div>
+
+    <div id="form-container" class="theme-transition p-8 mb-5 rounded-lg shadow-lg w-full max-w-md" style="background-color: rgb(255, 255, 255); color: rgb(31, 41, 55);">
+      <h2 id="main-title" class="text-3xl font-bold mb-6 text-center" style="color: rgb(37, 99, 235);">
+        REGISTER
+      </h2>
+
+      <form action="https://www.claudeusercontent.com/?errorReportingMode=parent" id="registerform">
+        <div class="mb-4">
+          <input type="text" class="theme-transition w-full px-4 py-2 border rounded focus:outline-none focus:ring-2" id="email" name="email" placeholder="Enter Email" required="" style="background-color: rgb(255, 255, 255); border-color: rgb(209, 213, 219); color: rgb(31, 41, 55);">
+          <input type="password" class="theme-transition w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 mt-4" name="password" id="password" placeholder="Enter Password" required="" style="background-color: rgb(255, 255, 255); border-color: rgb(209, 213, 219); color: rgb(31, 41, 55);">
+          <input type="password" class="theme-transition w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 mt-4" name="cpassword" id="cpassword" placeholder="Confirm Password" required="" style="background-color: rgb(255, 255, 255); border-color: rgb(209, 213, 219); color: rgb(31, 41, 55);">
+          <button type="submit" id="submit-btn" class="theme-transition w-full mt-5 px-4 py-2 text-white shadow-sm border rounded" style="background-color: rgb(37, 99, 235); color: rgb(255, 255, 255);">
+            REGISTER
+          </button>
+          <p class="mt-2 text-center">Have an account? <a href="https://www.claudeusercontent.com/?errorReportingMode=parent#" id="login-link" class="theme-transition" style="color: rgb(37, 99, 235);">Login</a></p>
+        </div>
+      </form>
+    </div>
+
+    <script>
+      const form = document.getElementById('registerform');
+      const themeToggle = document.getElementById('theme-toggle');
+      const themeIcon = document.getElementById('themeIcon');
+
+      // Theme color configurations - you can easily modify these colors
+      const themes = {
+        light: {
+          // Body/Background
+          bodyBg: '#f3f4f6',
+          bodyText: '#1f2937',
+          
+          // Form container
+          containerBg: '#ffffff',
+          containerText: '#1f2937',
+          
+          // Theme toggle button
+          toggleBg: '#e5e7eb',
+          toggleHover: '#d1d5db',
+          
+          // Inputs
+          inputBg: '#ffffff',
+          inputBorder: '#d1d5db',
+          inputText: '#1f2937',
+          inputPlaceholder: '#6b7280',
+          inputFocus: '#3b82f6',
+          
+          // Title
+          titleColor: '#2563eb',
+          
+          // Submit button
+          btnBg: '#2563eb',
+          btnHover: '#1d4ed8',
+          btnText: '#ffffff',
+          
+          // Links
+          linkColor: '#2563eb',
+          linkHover: '#1d4ed8'
+        },
+        dark: {
+          // Body/Background
+          bodyBg: '#111827',
+          bodyText: '#f9fafb',
+          
+          // Form container
+          containerBg: '#1f2937',
+          containerText: '#f9fafb',
+          
+          // Theme toggle button
+          toggleBg: '#374151',
+          toggleHover: '#4b5563',
+          
+          // Inputs
+          inputBg: '#374151',
+          inputBorder: '#4b5563',
+          inputText: '#f9fafb',
+          inputPlaceholder: '#9ca3af',
+          inputFocus: '#60a5fa',
+          
+          // Title
+          titleColor: '#60a5fa',
+          
+          // Submit button
+          btnBg: '#1e40af',
+          btnHover: '#1e3a8a',
+          btnText: '#ffffff',
+          
+          // Links
+          linkColor: '#60a5fa',
+          linkHover: '#93c5fd'
+        }
+      };
+
+      // Initialize theme
+      let isDarkMode = false;
+
+      // Function to apply theme colors
+      function applyTheme(theme) {
+        const colors = themes[theme];
+        
+        // Body styles
+        document.body.style.backgroundColor = colors.bodyBg;
+        document.body.style.color = colors.bodyText;
+        
+        // Form container
+        const formContainer = document.getElementById('form-container');
+        formContainer.style.backgroundColor = colors.containerBg;
+        formContainer.style.color = colors.containerText;
+        
+        // Theme toggle button
+        themeToggle.style.backgroundColor = colors.toggleBg;
+        themeToggle.onmouseenter = () => themeToggle.style.backgroundColor = colors.toggleHover;
+        themeToggle.onmouseleave = () => themeToggle.style.backgroundColor = colors.toggleBg;
+        
+        // Title
+        const title = document.getElementById('main-title');
+        title.style.color = colors.titleColor;
+        
+        // Inputs
+        const inputs = document.querySelectorAll('input[type="text"], input[type="password"]');
+        inputs.forEach(input => {
+          input.style.backgroundColor = colors.inputBg;
+          input.style.borderColor = colors.inputBorder;
+          input.style.color = colors.inputText;
+          
+          // Focus styles
+          input.onfocus = () => {
+            input.style.borderColor = colors.inputFocus;
+            input.style.boxShadow = `0 0 0 2px ${colors.inputFocus}33`;
+          };
+          input.onblur = () => {
+            input.style.borderColor = colors.inputBorder;
+            input.style.boxShadow = 'none';
+          };
+        });
+        
+        // Placeholder styling (requires CSS)
+        const style = document.createElement('style');
+        style.textContent = `
+          input::placeholder {
+            color: ${colors.inputPlaceholder} !important;
+          }
+        `;
+        document.head.appendChild(style);
+        
+        // Submit button
+        const submitBtn = document.getElementById('submit-btn');
+        submitBtn.style.backgroundColor = colors.btnBg;
+        submitBtn.style.color = colors.btnText;
+        submitBtn.onmouseenter = () => submitBtn.style.backgroundColor = colors.btnHover;
+        submitBtn.onmouseleave = () => submitBtn.style.backgroundColor = colors.btnBg;
+        
+        // Links
+        const loginLink = document.getElementById('login-link');
+        loginLink.style.color = colors.linkColor;
+        loginLink.onmouseenter = () => loginLink.style.color = colors.linkHover;
+        loginLink.onmouseleave = () => loginLink.style.color = colors.linkColor;
+      }
+
+      // Theme toggle functionality
+      themeToggle.addEventListener('click', () => {
+          isDarkMode = !isDarkMode;
+          
+          if (isDarkMode) {
+              applyTheme('dark');
+              // Change to moon icon for dark mode
+              themeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />`;
+          } else {
+              applyTheme('light');
+              // Change to sun icon for light mode
+              themeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />`;
+          }
+      });
+
+      // Initialize with light theme
+      applyTheme('light');
+
+      form.addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          const email = document.getElementById('email').value;
+          const password = document.getElementById('password').value;
+          const cpassword = document.getElementById('cpassword').value;
+
+          if (email === "" || password === "" || cpassword === "" || !email.includes('@') || !email.includes('.')) {
+              alert("Please fill in all fields with a valid email.");
+              return;
+          }
+          
+          if (password !== cpassword) {
+              alert("Passwords do not match.");
+              return;
+          }
+          
+          alert("Registration successful!");
+      });
+    </script>
+  
+</body></html>
