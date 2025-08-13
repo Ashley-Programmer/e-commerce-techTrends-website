@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Sample product data (updated with descriptions and ratings)
+    // Sample product data
     const products = [
         { id: 'tv', name: '4K Smart TV 55"', category: 'tv', price: 5799.99, image: '../assets/images/product_tv1.jpg', description: 'Immersive 4K visuals with smart streaming.', rating: 4.5 },
         { id: 'tv2', name: 'LED Television 32"', category: 'tv', price: 3999.99, image: '../assets/images/product_tv2.jpg', description: 'Compact LED TV with vibrant display.', rating: 4.0 },
@@ -14,7 +14,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Cart class
     class Cart {
         constructor() {
-            this.items = JSON.parse(localStorage.getItem('cart')) || [];
+            // Initialize empty cart to ensure it's clear on page load
+            this.items = [];
+            localStorage.setItem('cart', JSON.stringify(this.items));
         }
 
         addItem(product) {
@@ -59,8 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         updateCartUI() {
             const cartCount = document.getElementById('cart-count');
-            const miniCartItems = document.getElementById('mini-cart-items');
-            const miniCartTotal = document.getElementById('mini-cart-total');
+            const cartItems = document.getElementById('cart-items');
+            const cartTotal = document.getElementById('cart-total');
             const checkoutItems = document.getElementById('checkout-items');
             const checkoutTotal = document.getElementById('checkout-total');
 
@@ -68,8 +70,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const itemCount = this.items.reduce((sum, item) => sum + item.quantity, 0);
             cartCount.textContent = itemCount;
 
-            // Update mini-cart
-            miniCartItems.innerHTML = this.items.length === 0
+            // Update cart modal
+            cartItems.innerHTML = this.items.length === 0
                 ? '<p class="text-gray-600 text-sm">Your cart is empty.</p>'
                 : this.items.map(item => `
                     <div class="flex items-center justify-between">
@@ -103,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Update totals
             const total = this.getTotal();
-            miniCartTotal.textContent = `Total: R${total}`;
+            cartTotal.textContent = `Total: R${total}`;
             checkoutTotal.textContent = `Total: R${total}`;
         }
     }
@@ -111,6 +113,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const cart = new Cart();
     const productGrid = document.getElementById('product-grid');
     const categoryFilters = document.querySelectorAll('.category-filter');
+    const cartToggle = document.getElementById('cart-toggle');
+    const cartModal = document.getElementById('cart-modal');
+    const closeCart = document.getElementById('close-cart');
+    const clearCart = document.getElementById('clear-cart');
     const proceedCheckout = document.getElementById('proceed-to-checkout');
     const checkoutModal = document.getElementById('checkout-modal');
     const closeCheckout = document.getElementById('close-checkout');
@@ -181,13 +187,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     alert(`${product.name} added to cart!`);
                     button.disabled = false;
                     button.classList.remove('loading');
-                }, 500); // Simulate 0.5-second delay
+                }, 500);
             }
         }
     });
 
     // Handle cart controls
-    document.getElementById('mini-cart-items').addEventListener('click', (e) => {
+    document.getElementById('cart-items').addEventListener('click', (e) => {
         const target = e.target.closest('.remove-item, .increment-quantity, .decrement-quantity');
         if (!target) return;
         const productId = target.getAttribute('data-product-id');
@@ -204,14 +210,36 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Cart modal toggle
+    cartToggle.addEventListener('click', () => {
+        cartModal.classList.toggle('active');
+    });
+
+    closeCart.addEventListener('click', () => {
+        cartModal.classList.remove('active');
+    });
+
+    cartModal.addEventListener('click', (e) => {
+        if (e.target === cartModal) {
+            cartModal.classList.remove('active');
+        }
+    });
+
+    // Clear cart
+    clearCart.addEventListener('click', () => {
+        cart.clear();
+        cartModal.classList.remove('active');
+        alert('Cart cleared!');
+    });
+
     // Checkout modal toggle
     proceedCheckout.addEventListener('click', () => {
         if (cart.items.length === 0) {
             alert('Your cart is empty. Please add items before proceeding to checkout.');
             return;
         }
+        cartModal.classList.remove('active');
         checkoutModal.classList.remove('hidden');
-        document.getElementById('mini-cart-dropdown').classList.add('hidden');
         document.getElementById('shipping-name').focus();
     });
 

@@ -31,6 +31,36 @@
                 font-size: 1.125rem;
                 color: #1f2937;
             }
+            .btn {
+                position: relative;
+                overflow: hidden;
+            }
+            .btn.loading i {
+                display: inline-block;
+                animation: spin 1s linear infinite;
+            }
+            @keyframes spin {
+                100% { transform: rotate(360deg); }
+            }
+            .form-message {
+                display: none;
+                padding: 1rem;
+                border-radius: 0.375rem;
+                margin-top: 1rem;
+                font-size: 0.875rem;
+            }
+            .form-message.success {
+                display: block;
+                background-color: #d4edda;
+                color: #155724;
+                border: 1px solid #c3e6cb;
+            }
+            .form-message.error {
+                display: block;
+                background-color: #f8d7da;
+                color: #721c24;
+                border: 1px solid #f5c6cb;
+            }
         </style>
     </head>
     <body class="font-inter bg-gray-100">
@@ -58,19 +88,19 @@
                                 </a>
                                 <div class="dropdown absolute hidden group-hover:block bg-white shadow-lg rounded-lg mt-2 w-64 z-50">
                                     <a href="../pages/products.html" class="flex items-center px-4 py-2 hover:bg-gray-100 transition duration-200">
-                                        <img src="../assets/images/category_tv_thumb.jpg" alt="Televisions" class="w-8 h-8 object-cover rounded mr-2">
+                                        <img src="/assets/images/Televisions.jpg" alt="Televisions" class="w-8 h-8 object-cover rounded mr-2">
                                         <span class="text-gray-700 text-sm">Televisions</span>
                                     </a>
                                     <a href="../pages/products.html?category=appliances" class="flex items-center px-4 py-2 hover:bg-gray-100 transition duration-200">
-                                        <img src="../assets/images/category_appliances_thumb.jpg" alt="Home Appliances" class="w-8 h-8 object-cover rounded mr-2">
+                                        <img src="/assets/images/home-appliances.webp" alt="Home Appliances" class="w-8 h-8 object-cover rounded mr-2">
                                         <span class="text-gray-700 text-sm">Home Appliances</span>
                                     </a>
                                     <a href="../pages/products.html?category=kitchen" class="flex items-center px-4 py-2 hover:bg-gray-100 transition duration-200">
-                                        <img src="../assets/images/category_kitchen_thumb.jpg" alt="Kitchen Appliances" class="w-8 h-8 object-cover rounded mr-2">
+                                        <img src="/assets/images/kitchen-appliances.png" alt="Kitchen Appliances" class="w-8 h-8 object-cover rounded mr-2">
                                         <span class="text-gray-700 text-sm">Kitchen Appliances</span>
                                     </a>
                                     <a href="../pages/products.html?category=climate" class="flex items-center px-4 py-2 hover:bg-gray-100 transition duration-200">
-                                        <img src="../assets/images/category_climate_thumb.jpg" alt="Climate Control" class="w-8 h-8 object-cover rounded mr-2">
+                                        <img src="/assets/images/climate-control.jpg" alt="Climate Control" class="w-8 h-8 object-cover rounded mr-2">
                                         <span class="text-gray-700 text-sm">Climate Control</span>
                                     </a>
                                 </div>
@@ -84,9 +114,6 @@
                             <span class="w-6 h-0.5 bg-gray-800 transition-transform duration-300"></span>
                             <span class="w-6 h-0.5 bg-gray-800 transition-transform duration-300"></span>
                         </button>
-                        <!-- <a href="cart.html" class="text-gray-900 hover:text-blue-600">
-                            <i class="fas fa-shopping-cart"></i>
-                        </a> -->
                         <a href="../pages/login.html" class="ml-4 text-gray-900 hover:text-blue-600">
                             <i class="fas fa-user"></i>
                         </a>
@@ -95,10 +122,10 @@
                 <div class="hidden md:hidden" id="mobile-menu">
                     <ul class="flex flex-col space-y-2 mt-2 py-4" role="list">
                         <li>
-                            <a href="../index.html" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">Home</a>
+                            <a href="../pages/index.html" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">Home</a>
                         </li>
                         <li>
-                            <a href="about.html" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">About Us</a>
+                            <a href="../pages/about.html" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">About Us</a>
                         </li>
                         <li>
                             <button class="nav-link text-gray-700 hover:text-blue-600 font-semibold text-base flex items-center w-full justify-center" id="mobile-products-toggle" aria-expanded="false" aria-controls="mobile-products-menu">
@@ -106,19 +133,19 @@
                             </button>
                             <ul class="hidden mt-2 space-y-1" id="mobile-products-menu">
                                 <li>
-                                    <a href="products.html?category=tv" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">Televisions</a>
+                                    <a href="../pages/products.html?category=tv" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">Televisions</a>
                                 </li>
                                 <li>
-                                    <a href="products.html?category=appliances" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">Home Appliances</a>
+                                    <a href="../pages/products.html?category=appliances" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">Home Appliances</a>
                                 </li>
                                 <li>
-                                    <a href="products.html?category=kitchen" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">Kitchen Appliances</a>
+                                    <a href="../pages/products.html?category=kitchen" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">Kitchen Appliances</a>
                                 </li>
                                 <li>
-                                    <a href="products.html?category=climate" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">Climate Control</a>
+                                    <a href="../pages/products.html?category=climate" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">Climate Control</a>
                                 </li>
                                 <li>
-                                    <a href="products.html" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">All Products</a>
+                                    <a href="../pages/products.html" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">All Products</a>
                                 </li>
                             </ul>
                         </li>
@@ -151,17 +178,6 @@
                     </button>
                 </div>
             </div>
-            <div class="mini-cart-dropdown hidden absolute right-0 mt-2 w-64 bg-white shadow-lg rounded-lg z-50">
-                <div class="p-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Your Cart</h3>
-                    <div id="mini-cart-items" class="space-y-4"></div>
-                    <p id="mini-cart-total" class="text-gray-500 font-semibold mt-4">Total: R0.00</p>
-                    <div class="flex justify-between mt-4">
-                        <a href="cart.html" class="bg-gray-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-600">View Cart</a>
-                        <button id="proceed-to-checkout" class="bg-gray-200 text-gray-800 py-2 px-4 rounded hover:bg-gray-300 transition duration-200">Checkout</button>
-                    </div>
-                </div>
-            </div>
         </nav>
 
         <!-- Contact Section -->
@@ -189,8 +205,12 @@
                                 <label for="message" class="block text-sm font-medium text-gray-700">Message</label>
                                 <textarea id="message" name="message" rows="5" class="w-full px-3 py-2 text-sm sm:text-base text-gray-800 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600" required aria-required="true"></textarea>
                             </div>
+                            <div id="form-message" class="form-message"></div>
                             <div>
-                                <button type="submit" class="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300 text-sm sm:text-base">Send Message</button>
+                                <button type="submit" class="btn w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300 text-sm sm:text-base">
+                                    Send Message
+                                    <i class="fas fa-spinner ml-2 hidden"></i>
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -232,11 +252,11 @@
                     <div>
                         <h3 class="text-lg sm:text-xl font-semibold mb-4">Quick Links</h3>
                         <ul class="space-y-2 text-sm sm:text-base">
-                            <li><a href="about.html" class="text-gray-400 hover:text-blue-400 transition duration-300">About Us</a></li>
-                            <li><a href="contact.html" class="text-gray-400 hover:text-blue-400 transition duration-300">Contact Us</a></li>
-                            <li><a href="products.html" class="text-gray-400 hover:text-blue-400 transition duration-300">Products</a></li>
-                            <li><a href="register.html" class="text-gray-400 hover:text-blue-400 transition duration-300">Register</a></li>
-                            <li><a href="login.html" class="text-gray-400 hover:text-blue-400 transition duration-300">Login</a></li>
+                            <li><a href="../pages/about.html" class="text-gray-400 hover:text-blue-400 transition duration-300">About Us</a></li>
+                            <li><a href="../pages/contact.html" class="text-gray-400 hover:text-blue-400 transition duration-300">Contact Us</a></li>
+                            <li><a href="../pages/products.html" class="text-gray-400 hover:text-blue-400 transition duration-300">Products</a></li>
+                            <li><a href="../pages/register.html" class="text-gray-400 hover:text-blue-400 transition duration-300">Register</a></li>
+                            <li><a href="../pages/login.html" class="text-gray-400 hover:text-blue-400 transition duration-300">Login</a></li>
                         </ul>
                     </div>
                     <div>
@@ -252,8 +272,12 @@
                         <p class="text-sm sm:text-base text-gray-400 mb-4">Join our newsletter for exclusive offers and updates.</p>
                         <div class="flex">
                             <input type="email" placeholder="Enter your email" class="w-full px-3 py-2 text-sm sm:text-base text-gray-800 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-600" id="newsletter-email">
-                            <button class="bg-blue-600 text-white px-3 sm:px-4 py-2 rounded-r-md hover:bg-blue-700 transition duration-300 text-sm sm:text-base" id="newsletter-submit">Subscribe</button>
+                            <button class="btn bg-blue-600 text-white px-3 sm:px-4 py-2 rounded-r-md hover:bg-blue-700 transition duration-300 text-sm sm:text-base">
+                                Subscribe
+                                <i class="fas fa-spinner ml-2 hidden"></i>
+                            </button>
                         </div>
+                        <div id="newsletter-message" class="form-message"></div>
                         <div class="flex space-x-4 mt-4">
                             <a href="https://facebook.com/techtrendinnovations" class="text-gray-400 hover:text-blue-400 transition duration-300 text-lg" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
                             <a href="https://twitter.com/techtrendinnovations" class="text-gray-400 hover:text-blue-400 transition duration-300 text-lg" aria-label="Twitter"><i class="fab fa-twitter"></i></a>

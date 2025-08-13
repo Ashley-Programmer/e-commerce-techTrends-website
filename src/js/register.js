@@ -9,11 +9,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const emailError = document.getElementById('email-error');
     const passwordError = document.getElementById('password-error');
     const confirmPasswordError = document.getElementById('confirm-password-error');
+    const formMessage = document.getElementById('form-message');
     const submitButton = document.getElementById('register-submit');
     const passwordToggle = document.getElementById('password-toggle');
     const confirmPasswordToggle = document.getElementById('confirm-password-toggle');
 
-    if (registerForm) {
+    if (registerForm && formMessage) {
         // Password Visibility Toggles
         passwordToggle.addEventListener('click', () => {
             const isPassword = passwordInput.type === 'password';
@@ -31,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
             confirmPasswordToggle.setAttribute('aria-label', isPassword ? 'Hide confirm password' : 'Show confirm password');
         });
 
-        registerForm.addEventListener('submit', (e) => {
+        registerForm.addEventListener('submit', async (e) => {
             e.preventDefault(); // Prevent default form submission
 
             // Reset error messages
@@ -43,6 +44,8 @@ document.addEventListener('DOMContentLoaded', () => {
             emailInput.setAttribute('aria-invalid', 'false');
             passwordInput.setAttribute('aria-invalid', 'false');
             confirmPasswordInput.setAttribute('aria-invalid', 'false');
+            formMessage.className = 'form-message';
+            formMessage.textContent = '';
 
             // Get form inputs
             const name = nameInput.value.trim();
@@ -76,34 +79,84 @@ document.addEventListener('DOMContentLoaded', () => {
                 isValid = false;
             }
 
-            if (!isValid) return;
+            if (!isValid) {
+                formMessage.className = 'form-message error';
+                formMessage.textContent = 'Please fix the errors above.';
+                return;
+            }
 
             // Simulate loading state
             submitButton.disabled = true;
             submitButton.classList.add('loading');
-            setTimeout(() => {
-                // Placeholder submission (replace with backend integration)
-                alert(`Registration successful for ${name} (${email})! (Placeholder - implement actual authentication)`);
+            submitButton.querySelector('i').classList.remove('hidden');
+
+            try {
+                // Simulate async submission (replace with actual backend call)
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                // Success message
+                formMessage.className = 'form-message success';
+                formMessage.textContent = `Registration successful for ${name}! Please log in.`;
+                registerForm.reset();
+
+                // Redirect to login.html after a brief delay
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1000); // 1-second delay to show success message
+            } catch (error) {
+                // Error message
+                formMessage.className = 'form-message error';
+                formMessage.textContent = 'Registration failed. Please try again later.';
+            } finally {
                 submitButton.disabled = false;
                 submitButton.classList.remove('loading');
-                registerForm.reset();
-            }, 1000); // Simulate 1-second delay
+                submitButton.querySelector('i').classList.add('hidden');
+            }
         });
     }
 
     // Newsletter Form Handling
     const newsletterForm = document.getElementById('newsletter-email');
     const newsletterButton = document.getElementById('newsletter-submit');
-    if (newsletterForm && newsletterButton) {
-        newsletterButton.addEventListener('click', () => {
+    const newsletterMessage = document.getElementById('newsletter-message');
+    if (newsletterForm && newsletterButton && newsletterMessage) {
+        newsletterButton.addEventListener('click', async () => {
+            // Get button
+            const button = newsletterButton;
+            button.disabled = true;
+            button.classList.add('loading');
+            button.querySelector('i').classList.remove('hidden');
+
+            // Clear previous messages
+            newsletterMessage.className = 'form-message';
+            newsletterMessage.textContent = '';
+
             const email = newsletterForm.value.trim();
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!email || !emailRegex.test(email)) {
-                alert('Please enter a valid email address.');
+                newsletterMessage.className = 'form-message error';
+                newsletterMessage.textContent = 'Please enter a valid email address.';
+                button.disabled = false;
+                button.classList.remove('loading');
+                button.querySelector('i').classList.add('hidden');
                 return;
             }
-            alert(`Subscribed with ${email}! (Placeholder - implement actual submission)`);
-            newsletterForm.value = '';
+
+            try {
+                // Simulate async submission (replace with actual backend call)
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                newsletterMessage.className = 'form-message success';
+                newsletterMessage.textContent = `Subscribed with ${email}!`;
+                newsletterForm.value = '';
+            } catch (error) {
+                newsletterMessage.className = 'form-message error';
+                newsletterMessage.textContent = 'Failed to subscribe. Please try again later.';
+            } finally {
+                button.disabled = false;
+                button.classList.remove('loading');
+                button.querySelector('i').classList.add('hidden');
+            }
         });
     }
 });
