@@ -1,69 +1,87 @@
+// Initialize page functionality when DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
-    // Mobile menu toggle
+    initializeMobileMenu();
+    initializeSearchBar();
+    initializeMobileProductsDropdown();
+    initializeDesktopDropdowns();
+    initializeActivePageHighlight();
+    initializeNewsletterForm();
+    initializeCarousel();
+});
+
+// Mobile Menu Toggle
+function initializeMobileMenu() {
     const navToggle = document.getElementById('nav-toggle');
     const mobileMenu = document.getElementById('mobile-menu');
-    const searchToggle = document.getElementById('search-toggle');
     const searchBar = document.getElementById('search-bar');
-    const mobileProductsToggle = document.getElementById('mobile-products-toggle');
-    const mobileProductsMenu = document.getElementById('mobile-products-menu');
-    const searchInput = document.getElementById('search-input');
-    const searchSubmit = document.getElementById('search-submit');
+    const searchToggle = document.getElementById('search-toggle');
 
-    // Mobile menu toggle functionality
     if (navToggle && mobileMenu) {
         navToggle.addEventListener('click', () => {
             const isExpanded = navToggle.getAttribute('aria-expanded') === 'true';
             navToggle.setAttribute('aria-expanded', !isExpanded);
             mobileMenu.classList.toggle('hidden');
+
+            // Toggle hamburger icon to X
             const spans = navToggle.querySelectorAll('span');
             spans[0].classList.toggle('rotate-45', !isExpanded);
             spans[0].classList.toggle('translate-y-2', !isExpanded);
             spans[1].classList.toggle('opacity-0', !isExpanded);
             spans[2].classList.toggle('-rotate-45', !isExpanded);
             spans[2].classList.toggle('-translate-y-2', !isExpanded);
+
+            // Close other menus
             searchBar.classList.remove('active');
             searchToggle.setAttribute('aria-expanded', 'false');
-            document.querySelector('.mini-cart-dropdown').classList.add('hidden');
         });
     }
+}
 
-    // Search toggle functionality
+// Search Bar Toggle and Submission
+function initializeSearchBar() {
+    const searchToggle = document.getElementById('search-toggle');
+    const searchBar = document.getElementById('search-bar');
+    const searchInput = document.getElementById('search-input');
+    const searchSubmit = document.getElementById('search-submit');
+    const navToggle = document.getElementById('nav-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+
     if (searchToggle && searchBar) {
         searchToggle.addEventListener('click', () => {
-            console.log('Search toggle clicked'); // Debug
             const isExpanded = searchToggle.getAttribute('aria-expanded') === 'true';
             searchToggle.setAttribute('aria-expanded', !isExpanded);
             searchBar.classList.toggle('active');
-            console.log('Search bar active:', searchBar.classList.contains('active')); // Debug
+
+            // Close mobile menu and reset hamburger icon
             mobileMenu.classList.add('hidden');
             navToggle.setAttribute('aria-expanded', 'false');
             const spans = navToggle.querySelectorAll('span');
             spans[0].classList.remove('rotate-45', 'translate-y-2');
             spans[1].classList.remove('opacity-0');
             spans[2].classList.remove('-rotate-45', '-translate-y-2');
-            document.querySelector('.mini-cart-dropdown').classList.add('hidden');
+            miniCart.classList.add('hidden');
         });
     }
 
-    // Search submit functionality
     if (searchSubmit && searchInput) {
-        searchSubmit.addEventListener('click', () => {
+        const handleSearch = () => {
             const query = searchInput.value.trim();
             if (query) {
                 window.location.href = `../pages/products.html?search=${encodeURIComponent(query)}`;
             }
-        });
+        };
+        searchSubmit.addEventListener('click', handleSearch);
         searchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                const query = searchInput.value.trim();
-                if (query) {
-                    window.location.href = `../pages/products.html?search=${encodeURIComponent(query)}`;
-                }
-            }
+            if (e.key === 'Enter') handleSearch();
         });
     }
+}
 
-    // Mobile products dropdown toggle
+// Mobile Products Dropdown Toggle
+function initializeMobileProductsDropdown() {
+    const mobileProductsToggle = document.getElementById('mobile-products-toggle');
+    const mobileProductsMenu = document.getElementById('mobile-products-menu');
+
     if (mobileProductsToggle && mobileProductsMenu) {
         mobileProductsToggle.addEventListener('click', () => {
             const isExpanded = mobileProductsToggle.getAttribute('aria-expanded') === 'true';
@@ -74,8 +92,10 @@ document.addEventListener('DOMContentLoaded', () => {
             chevron.classList.toggle('fa-chevron-up');
         });
     }
+}
 
-    // Desktop dropdown hover functionality
+// Desktop Dropdown Hover
+function initializeDesktopDropdowns() {
     const dropdowns = document.querySelectorAll('.relative.group');
     dropdowns.forEach(dropdown => {
         const link = dropdown.querySelector('a');
@@ -89,76 +109,11 @@ document.addEventListener('DOMContentLoaded', () => {
             link.setAttribute('aria-expanded', 'false');
         });
     });
+}
 
-    // Mini cart functionality
-    const cartIcon = document.querySelector('a[href="../pages/cart.html"]');
-    const miniCart = document.querySelector('.mini-cart-dropdown');
-    const miniCartItems = document.getElementById('mini-cart-items');
-    const miniCartTotal = document.getElementById('mini-cart-total');
 
-    if (cartIcon && miniCart) {
-        cartIcon.addEventListener('click', (e) => {
-            e.preventDefault();
-            miniCart.classList.toggle('hidden');
-            searchBar.classList.remove('active');
-            searchToggle.setAttribute('aria-expanded', 'false');
-            mobileMenu.classList.add('hidden');
-            navToggle.setAttribute('aria-expanded', 'false');
-            const spans = navToggle.querySelectorAll('span');
-            spans[0].classList.remove('rotate-45', 'translate-y-2');
-            spans[1].classList.remove('opacity-0');
-            spans[2].classList.remove('-rotate-45', '-translate-y-2');
-        });
-        document.addEventListener('click', (e) => {
-            if (!miniCart.contains(e.target) && !cartIcon.contains(e.target)) {
-                miniCart.classList.add('hidden');
-            }
-        });
-    }
-
-    // Sample cart items (replace with actual cart data logic)
-    const cartItems = [
-        {name: 'Smart TV', price: 7999.99, quantity: 1, image: '../assets/images/product_tv.jpg'},
-        {name: 'Refrigerator', price: 4999.99, quantity: 1, image: '../assets/images/product_fridge.jpg'},
-        {name: 'Washing Machine', price: 2999.99, quantity: 1, image: '../assets/images/product_washing_machine.jpg'}
-    ];
-
-    // Render cart items in mini cart
-    function renderCart() {
-        if (miniCartItems && miniCartTotal) {
-            miniCartItems.innerHTML = '';
-            let total = 0;
-            cartItems.forEach(item => {
-                total += item.price * item.quantity;
-                const itemElement = document.createElement('div');
-                itemElement.className = 'flex items-center justify-between p-2 border-b';
-                itemElement.innerHTML = `
-                    <span>${item.name} (x${item.quantity})</span>
-                    <span>R${(item.price * item.quantity).toFixed(2)}</span>
-                `;
-                miniCartItems.appendChild(itemElement);
-            });
-            miniCartTotal.textContent = `Total: R${total.toFixed(2)}`;
-        }
-    }
-
-    // Initialize cart
-    renderCart();
-
-    // Close menus on escape key press
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            mobileMenu?.classList.add('hidden');
-            navToggle?.setAttribute('aria-expanded', 'false');
-            searchBar?.classList.remove('active');
-            searchToggle?.setAttribute('aria-expanded', 'false');
-            miniCart?.classList.add('hidden');
-            mobileProductsMenu?.classList.add('hidden');
-            mobileProductsToggle?.setAttribute('aria-expanded', 'false');
-        }
-    });
-
-    // Highlight active page
+// Highlight Active Page
+function initializeActivePageHighlight() {
     const navLinks = document.querySelectorAll('.nav-link');
     navLinks.forEach(link => {
         if (link.getAttribute('href') === window.location.pathname.replace(/\/$/, '')) {
@@ -166,9 +121,13 @@ document.addEventListener('DOMContentLoaded', () => {
             link.setAttribute('aria-current', 'page');
         }
     });
+}
 
+// Newsletter Form Submission
+function initializeNewsletterForm() {
     const newsletterForm = document.querySelector('footer input[type="email"]');
     const newsletterButton = document.querySelector('footer button');
+
     if (newsletterForm && newsletterButton) {
         newsletterButton.addEventListener('click', () => {
             const email = newsletterForm.value.trim();
@@ -180,71 +139,29 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+}
 
-    // Carousel functionality
-    const slides = document.querySelectorAll('.carousel-slide');
-    const dots = document.querySelectorAll('.carousel-dot');
-    const prevButton = document.querySelector('.carousel-nav.prev');
-    const nextButton = document.querySelector('.carousel-nav.next');
-    let currentSlide = 0;
-    const slideInterval = 5000; // 5 seconds
+// Close Menus on Escape Key
+function handleEscapeKey() {
+    const mobileMenu = document.getElementById('mobile-menu');
+    const navToggle = document.getElementById('nav-toggle');
+    const searchBar = document.getElementById('search-bar');
+    const searchToggle = document.getElementById('search-toggle');
+    const mobileProductsMenu = document.getElementById('mobile-products-menu');
+    const mobileProductsToggle = document.getElementById('mobile-products-toggle');
 
-    function showSlide(index) {
-        slides.forEach((slide, i) => {
-            slide.classList.toggle('active', i === index);
-        });
-        dots.forEach((dot, i) => {
-            dot.classList.toggle('active', i === index);
-        });
-        currentSlide = index;
-    }
-
-    function nextSlide() {
-        const nextIndex = (currentSlide + 1) % slides.length;
-        showSlide(nextIndex);
-    }
-
-    function prevSlide() {
-        const prevIndex = (currentSlide - 1 + slides.length) % slides.length;
-        showSlide(prevIndex);
-    }
-
-    // Auto-slide
-    let autoSlide = setInterval(nextSlide, slideInterval);
-
-    // Manual navigation
-    nextButton.addEventListener('click', () => {
-        clearInterval(autoSlide);
-        nextSlide();
-        autoSlide = setInterval(nextSlide, slideInterval);
-    });
-
-    prevButton.addEventListener('click', () => {
-        clearInterval(autoSlide);
-        prevSlide();
-        autoSlide = setInterval(nextSlide, slideInterval);
-    });
-
-    dots.forEach(dot => {
-        dot.addEventListener('click', () => {
-            clearInterval(autoSlide);
-            const slideIndex = parseInt(dot.getAttribute('data-slide'));
-            showSlide(slideIndex);
-            autoSlide = setInterval(nextSlide, slideInterval);
-        });
-    });
-
-    // Keyboard navigation for accessibility
-    document.querySelector('.carousel').addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowRight') {
-            clearInterval(autoSlide);
-            nextSlide();
-            autoSlide = setInterval(nextSlide, slideInterval);
-        } else if (e.key === 'ArrowLeft') {
-            clearInterval(autoSlide);
-            prevSlide();
-            autoSlide = setInterval(nextSlide, slideInterval);
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            mobileMenu?.classList.add('hidden');
+            navToggle?.setAttribute('aria-expanded', 'false');
+            searchBar?.classList.remove('active');
+            searchToggle?.setAttribute('aria-expanded', 'false');
+            miniCart?.classList.add('hidden');
+            mobileProductsMenu?.classList.add('hidden');
+            mobileProductsToggle?.setAttribute('aria-expanded', 'false');
         }
     });
+}
 
-});
+// Initialize escape key handler
+handleEscapeKey();

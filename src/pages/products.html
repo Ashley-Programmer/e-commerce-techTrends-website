@@ -1,168 +1,184 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>TechTrend Innovations - Products</title>
-        <meta name="description" content="Shop electronics and appliances at TechTrend Innovations in Rustenburg, South Africa.">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-        <script src="https://cdn.tailwindcss.com"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-        <style>
-            .search-bar {
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                transform: translateY(-100%);
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>TechTrend Innovations - Products</title>
+    <meta name="description" content="Shop electronics and appliances at TechTrend Innovations in Rustenburg, South Africa.">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        /* Search bar styles */
+        .search-bar {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            transform: translateY(-100%);
+            opacity: 0;
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            pointer-events: none;
+            z-index: 40;
+        }
+        .search-bar.active {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .search-toggle i.fas.fa-search {
+            display: inline-block !important;
+            font-size: 1.125rem;
+            color: #1f2937;
+        }
+        /* Product card hover effects */
+        .product-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        /* Add to cart loading spinner */
+        .add-to-cart i {
+            display: none;
+        }
+        .add-to-cart.loading i {
+            display: inline-block;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+        /* Button ripple effect */
+        .btn {
+            position: relative;
+            overflow: hidden;
+        }
+        @keyframes ripple {
+            to {
+                transform: scale(4);
                 opacity: 0;
-                transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-                pointer-events: none;
-                z-index: 40;
             }
-            .search-bar.active {
-                transform: translateY(0);
-                opacity: 1;
-                pointer-events: auto;
-            }
-            .search-toggle i.fas.fa-search {
-                display: inline-block !important;
-                font-size: 1.125rem;
-                color: #1f2937;
-            }
-            .product-card {
-                transition: transform 0.3s ease, box-shadow 0.3s ease;
-            }
-            .product-card:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            }
-            .add-to-cart i {
-                display: none;
-            }
-            .add-to-cart.loading i {
-                display: inline-block;
-                animation: spin 1s linear infinite;
-            }
-            @keyframes spin {
-                100% { transform: rotate(360deg); }
-            }
-            .btn {
-                position: relative;
-                overflow: hidden;
-            }
-            @keyframes ripple {
-                to {
-                    transform: scale(4);
-                    opacity: 0;
-                }
-            }
-            .cart-modal {
-                display: none;
-                position: fixed;
-                inset: 0;
-                background: rgba(0, 0, 0, 0.5);
-                z-index: 50;
-                align-items: center;
-                justify-content: center;
-            }
-            .cart-modal.active {
-                display: flex;
-            }
-        </style>
-    </head>
-    <body class="font-inter bg-gray-100">
-        <!-- Navigation -->
-        <nav class="navbar bg-white shadow-sm fixed top-0 left-0 w-full z-50 transition-all duration-300" role="navigation" aria-label="main navigation">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex items-center justify-between h-16">
-                    <div class="flex-shrink-0">
-                        <a href="../pages/index.html" class="text-xl font-bold text-gray-900">
-                            <img src="/assets/logo_images/techTrends1.jpeg" alt="techTrends Innovations Logo" class="h-8 w-auto">
-                        </a>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <button class="search-toggle flex items-center focus:outline-none" id="search-toggle" aria-expanded="false" aria-controls="search-bar" aria-label="Toggle search">
-                            <i class="fas fa-search text-gray-800"></i>
-                        </button>
-                    </div>
-                    <div class="hidden md:block">
-                        <div class="ml-10 flex space-x-4 lg:space-x-6" id="nav-menu" role="list">
-                            <a href="../pages/index.html" class="nav-link text-gray-900 hover:text-blue-600 font-semibold text-sm lg:text-base">Home</a>
-                            <a href="../pages/about.html" class="nav-link text-gray-900 hover:text-blue-600 font-semibold text-sm lg:text-base">About Us</a>
-                            <div class="relative group">
-                                <a href="../pages/products.html" class="nav-link text-gray-900 hover:text-blue-600 font-semibold text-sm lg:text-base active" aria-current="page">Products
-                                    <i class="fas fa-chevron-down ml-1 text-xs"></i>
+        }
+        /* Cart and checkout modal styles */
+        .cart-modal, .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 50;
+            align-items: center;
+            justify-content: center;
+        }
+        .cart-modal.active, .modal.active {
+            display: flex;
+        }
+    </style>
+</head>
+<body class="font-inter bg-gray-100">
+    <!-- Navigation Bar -->
+    <nav class="navbar bg-white shadow-sm fixed top-0 left-0 w-full z-50 transition-all duration-300" role="navigation" aria-label="main navigation">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex-shrink-0">
+                    <a href="../pages/index.html" class="text-xl font-bold text-gray-900">
+                        <img src="/assets/logo_images/techTrends1.jpeg" alt="techTrends Innovations Logo" class="h-8 w-auto">
+                    </a>
+                </div>
+                <!-- Search Toggle -->
+                <div class="flex items-center space-x-4">
+                    <button class="search-toggle flex items-center focus:outline-none" id="search-toggle" aria-expanded="false" aria-controls="search-bar" aria-label="Toggle search">
+                        <i class="fas fa-search text-gray-800"></i>
+                    </button>
+                </div>
+                <!-- Desktop Navigation Menu -->
+                <div class="hidden md:block">
+                    <div class="ml-10 flex space-x-4 lg:space-x-6" id="nav-menu" role="list">
+                        <a href="../pages/index.html" class="nav-link text-gray-900 hover:text-blue-600 font-semibold text-sm lg:text-base">Home</a>
+                        <a href="../pages/about.html" class="nav-link text-gray-900 hover:text-blue-600 font-semibold text-sm lg:text-base">About Us</a>
+                        <div class="relative group">
+                            <a href="../pages/products.html" class="nav-link text-gray-900 hover:text-blue-600 font-semibold text-sm lg:text-base active" aria-current="page">
+                                Products
+                                <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                            </a>
+                            <div class="dropdown absolute hidden group-hover:block bg-white shadow-lg rounded-lg mt-2 w-64 z-50">
+                                <a href="../pages/products.html?category=tv" class="flex items-center px-4 py-2 hover:bg-gray-100 transition duration-200">
+                                    <img src="/assets/images/Televisions.jpg" alt="Televisions" class="w-8 h-8 object-cover rounded mr-2">
+                                    <span class="text-gray-700 text-sm">Televisions</span>
                                 </a>
-                                <div class="dropdown absolute hidden group-hover:block bg-white shadow-lg rounded-lg mt-2 w-64 z-50">
-                                    <a href="../pages/products.html?category=tv" class="flex items-center px-4 py-2 hover:bg-gray-100 transition duration-200">
-                                        <img src="/assets/images/Televisions.jpg" alt="Televisions" class="w-8 h-8 object-cover rounded mr-2">
-                                        <span class="text-gray-700 text-sm">Televisions</span>
-                                    </a>
-                                    <a href="../pages/products.html?category=appliances" class="flex items-center px-4 py-2 hover:bg-gray-100 transition duration-200">
-                                        <img src="/assets/images/home-appliances.webp" alt="Home Appliances" class="w-8 h-8 object-cover rounded mr-2">
-                                        <span class="text-gray-700 text-sm">Home Appliances</span>
-                                    </a>
-                                    <a href="../pages/products.html?category=kitchen" class="flex items-center px-4 py-2 hover:bg-gray-100 transition duration-200">
-                                        <img src="/assets/images/kitchen-appliances.png" alt="Kitchen Appliances" class="w-8 h-8 object-cover rounded mr-2">
-                                        <span class="text-gray-700 text-sm">Kitchen Appliances</span>
-                                    </a>
-                                    <a href="../pages/products.html?category=climate" class="flex items-center px-4 py-2 hover:bg-gray-100 transition duration-200">
-                                        <img src="/assets/images/climate-control.jpg" alt="Climate Control" class="w-8 h-8 object-cover rounded mr-2">
-                                        <span class="text-gray-700 text-sm">Climate Control</span>
-                                    </a>
-                                </div>
+                                <a href="../pages/products.html?category=appliances" class="flex items-center px-4 py-2 hover:bg-gray-100 transition duration-200">
+                                    <img src="/assets/images/home-appliances.webp" alt="Home Appliances" class="w-8 h-8 object-cover rounded mr-2">
+                                    <span class="text-gray-700 text-sm">Home Appliances</span>
+                                </a>
+                                <a href="../pages/products.html?category=kitchen" class="flex items-center px-4 py-2 hover:bg-gray-100 transition duration-200">
+                                    <img src="/assets/images/kitchen-appliances.png" alt="Kitchen Appliances" class="w-8 h-8 object-cover rounded mr-2">
+                                    <span class="text-gray-700 text-sm">Kitchen Appliances</span>
+                                </a>
+                                <a href="../pages/products.html?category=climate" class="flex items-center px-4 py-2 hover:bg-gray-100 transition duration-200">
+                                    <img src="/assets/images/climate-control.jpg" alt="Climate Control" class="w-8 h-8 object-cover rounded mr-2">
+                                    <span class="text-gray-700 text-sm">Climate Control</span>
+                                </a>
                             </div>
-                            <a href="../pages/contact.html" class="nav-link text-gray-900 hover:text-blue-600 font-semibold text-sm lg:text-base">Contact</a>
                         </div>
-                    </div>
-                    <div class="flex items-center">
-                        <button id="cart-toggle" class="text-gray-900 hover:text-blue-600 relative focus:outline-none" aria-label="View cart">
-                            <i class="fas fa-shopping-cart"></i>
-                            <span id="cart-count" class="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
-                        </button>
-                        <a href="../pages/login.html" class="ml-4 text-gray-900 hover:text-blue-600">
-                            <i class="fas fa-user"></i> Login
-                        </a>
+                        <a href="../pages/contact.html" class="nav-link text-gray-900 hover:text-blue-600 font-semibold text-sm lg:text-base">Contact</a>
                     </div>
                 </div>
-                <div class="hidden md:hidden" id="mobile-menu">
-                    <ul class="flex flex-col space-y-2 mt-2 py-4" role="list">
-                        <li>
-                            <a href="../pages/index.html" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">Home</a>
-                        </li>
-                        <li>
-                            <a href="../pages/about.html" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">About Us</a>
-                        </li>
-                        <li>
-                            <button class="nav-link text-gray-700 hover:text-blue-600 font-semibold text-base flex items-center w-full justify-center active" id="mobile-products-toggle" aria-expanded="false" aria-controls="mobile-products-menu">
-                                Products <i class="fas fa-chevron-down ml-1 text-xs"></i>
-                            </button>
-                            <ul class="hidden mt-2 space-y-1" id="mobile-products-menu">
-                                <li>
-                                    <a href="products.html?category=tv" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">Televisions</a>
-                                </li>
-                                <li>
-                                    <a href="products.html?category=appliances" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">Home Appliances</a>
-                                </li>
-                                <li>
-                                    <a href="products.html?category=kitchen" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">Kitchen Appliances</a>
-                                </li>
-                                <li>
-                                    <a href="products.html?category=climate" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">Climate Control</a>
-                                </li>
-                                <li>
-                                    <a href="../pages/products.html" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">All Products</a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li>
-                            <a href="../pages/contact.html" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">Contact</a>
-                        </li>
-                    </ul>
+                <!-- Mobile Menu Toggle and Cart/Login Links -->
+                <div class="flex items-center">
+                    <button class="nav-toggle md:hidden flex flex-col space-y-1.5 focus:outline-none" id="nav-toggle" aria-expanded="false" aria-controls="mobile-menu" aria-label="Toggle navigation">
+                        <span class="w-6 h-0.5 bg-gray-800 transition-transform duration-300"></span>
+                        <span class="w-6 h-0.5 bg-gray-800 transition-transform duration-300"></span>
+                        <span class="w-6 h-0.5 bg-gray-800 transition-transform duration-300"></span>
+                    </button>
+                    <button id="cart-toggle" class="ml-4 text-gray-900 hover:text-blue-600 relative focus:outline-none" aria-label="View cart">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span id="cart-count" class="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
+                    </button>
+                    <a href="../pages/login.html" class="ml-4 text-gray-900 hover:text-blue-600">
+                        <i class="fas fa-user"></i>
+                    </a>
                 </div>
             </div>
+            <!-- Mobile Navigation Menu -->
+            <div class="hidden md:hidden" id="mobile-menu">
+                <ul class="flex flex-col space-y-2 mt-2 py-4" role="list">
+                    <li>
+                        <a href="../pages/index.html" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">Home</a>
+                    </li>
+                    <li>
+                        <a href="../pages/about.html" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">About Us</a>
+                    </li>
+                    <li>
+                        <button class="nav-link text-gray-700 hover:text-blue-600 font-semibold text-base flex items-center w-full justify-center active" id="mobile-products-toggle" aria-expanded="false" aria-controls="mobile-products-menu">
+                            Products <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                        </button>
+                        <ul class="hidden mt-2 space-y-1" id="mobile-products-menu">
+                            <li>
+                                <a href="../pages/products.html?category=tv" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">Televisions</a>
+                            </li>
+                            <li>
+                                <a href="../pages/products.html?category=appliances" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">Home Appliances</a>
+                            </li>
+                            <li>
+                                <a href="../pages/products.html?category=kitchen" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">Kitchen Appliances</a>
+                            </li>
+                            <li>
+                                <a href="../pages/products.html?category=climate" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">Climate Control</a>
+                            </li>
+                            <li>
+                                <a href="../pages/products.html" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">All Products</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="../pages/contact.html" class="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100 rounded-md">Contact</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- Search Bar -->
             <div class="search-bar bg-white w-full shadow-md py-2 px-4 sm:px-6" id="search-bar">
                 <div class="max-w-7xl mx-auto flex items-center">
                     <input type="text" id="search-input" placeholder="Search products..." class="w-full px-3 py-2 text-sm sm:text-base text-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600" aria-label="Search products">
@@ -209,7 +225,7 @@
                     <div class="grid grid-cols-1 gap-4 mb-4">
                         <input type="text" id="shipping-name" placeholder="Full Name" class="w-full px-3 py-2 text-sm text-gray-800 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600" required aria-label="Full Name">
                         <input type="email" id="shipping-email" placeholder="Email" class="w-full px-3 py-2 text-sm text-gray-800 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600" required aria-label="Email">
-                        <input type="text" id="shipping-address" placeholder="Address" class="w-full px-3 py-2 text-sm text-gray指標
+                        <input type="text" id="shipping-address" placeholder="Address" class="w-full px-3 py-2 text-sm text-gray-800 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600" required aria-label="Address">
                         <input type="text" id="shipping-city" placeholder="City" class="w-full px-3 py-2 text-sm text-gray-800 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600" required aria-label="City">
                         <input type="text" id="shipping-zip" placeholder="ZIP Code" class="w-full px-3 py-2 text-sm text-gray-800 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600" required aria-label="ZIP Code">
                     </div>
@@ -250,11 +266,13 @@
         <footer class="bg-gray-900 text-white py-10 sm:py-12" role="contentinfo" aria-label="Footer">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
+                    <!-- Company Info -->
                     <div>
                         <h3 class="text-lg sm:text-xl font-semibold mb-4">TechTrend Innovations</h3>
                         <p class="text-sm sm:text-base text-gray-400 mb-4">Delivering cutting-edge electronics and appliances to enhance your lifestyle.</p>
                         <p class="text-sm sm:text-base text-gray-400">&copy; 2025 TechTrend Innovations. All rights reserved.</p>
                     </div>
+                    <!-- Quick Links -->
                     <div>
                         <h3 class="text-lg sm:text-xl font-semibold mb-4">Quick Links</h3>
                         <ul class="space-y-2 text-sm sm:text-base">
@@ -265,6 +283,7 @@
                             <li><a href="../pages/login.html" class="text-gray-400 hover:text-blue-400 transition duration-300">Login</a></li>
                         </ul>
                     </div>
+                    <!-- Contact Info -->
                     <div>
                         <h3 class="text-lg sm:text-xl font-semibold mb-4">Contact Us</h3>
                         <ul class="space-y-2 text-sm sm:text-base">
@@ -273,6 +292,7 @@
                             <li><span class="text-gray-400">0313 Makweleng Sec, Rustenburg City, SA</span></li>
                         </ul>
                     </div>
+                    <!-- Newsletter and Social Media -->
                     <div>
                         <h3 class="text-lg sm:text-xl font-semibold mb-4">Stay Connected</h3>
                         <p class="text-sm sm:text-base text-gray-400 mb-4">Join our newsletter for exclusive offers and updates.</p>
@@ -294,7 +314,6 @@
             </div>
         </footer>
 
-        <script src="../js/script.js" defer></script>
         <script src="../js/products.js" defer></script>
     </body>
 </html>
