@@ -114,49 +114,4 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-
-    // Newsletter Form Handling
-    const newsletterForm = document.getElementById('newsletter-email');
-    const newsletterButton = document.getElementById('newsletter-submit');
-    const newsletterMessage = document.getElementById('newsletter-message');
-    if (newsletterForm && newsletterButton && newsletterMessage) {
-        newsletterButton.addEventListener('click', async () => {
-            // Get button
-            const button = newsletterButton;
-            button.disabled = true;
-            button.classList.add('loading');
-            button.querySelector('i').classList.remove('hidden');
-
-            // Clear previous messages
-            newsletterMessage.className = 'form-message';
-            newsletterMessage.textContent = '';
-
-            const email = newsletterForm.value.trim();
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!email || !emailRegex.test(email)) {
-                newsletterMessage.className = 'form-message error';
-                newsletterMessage.textContent = 'Please enter a valid email address.';
-                button.disabled = false;
-                button.classList.remove('loading');
-                button.querySelector('i').classList.add('hidden');
-                return;
-            }
-
-            try {
-                // Simulate async submission (replace with actual backend call)
-                await new Promise(resolve => setTimeout(resolve, 1000));
-
-                newsletterMessage.className = 'form-message success';
-                newsletterMessage.textContent = `Subscribed with ${email}!`;
-                newsletterForm.value = '';
-            } catch (error) {
-                newsletterMessage.className = 'form-message error';
-                newsletterMessage.textContent = 'Failed to subscribe. Please try again later.';
-            } finally {
-                button.disabled = false;
-                button.classList.remove('loading');
-                button.querySelector('i').classList.add('hidden');
-            }
-        });
-    }
 });
